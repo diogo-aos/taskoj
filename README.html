@@ -1,0 +1,215 @@
+<h1 id="scheduler-module">Scheduler module</h1>
+<h2 id="interface">Interface</h2>
+<h3 id="base-task">base task</h3>
+<table>
+<thead>
+<tr class="header">
+<th>parameter</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>id</td>
+<td>string that identifies the task</td>
+</tr>
+<tr class="even">
+<td>func</td>
+<td>function for the task to execute</td>
+</tr>
+<tr class="odd">
+<td>args</td>
+<td>list of arguments to pass to the function when it is called</td>
+</tr>
+<tr class="even">
+<td>startTimestamp</td>
+<td>timestamp of the moment when the task was created</td>
+</tr>
+<tr class="odd">
+<td>lastTimestamp</td>
+<td>timestamp of the last time the task was executed</td>
+</tr>
+<tr class="even">
+<td>nExecs</td>
+<td>number of times the task has been executed</td>
+</tr>
+<tr class="odd">
+<td>exec_before</td>
+<td>list of tasks to be executed before executing the main task</td>
+</tr>
+<tr class="even">
+<td>exec_after</td>
+<td>list of tasks to be executed after executing the main task</td>
+</tr>
+</tbody>
+</table>
+<h3 id="addperiodic">addPeriodic</h3>
+<table style="width:31%;">
+<colgroup>
+<col width="13%" />
+<col width="16%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>parameter</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>id</td>
+<td>string that identifies the task</td>
+</tr>
+<tr class="even">
+<td>func</td>
+<td>function for the task to execute</td>
+</tr>
+<tr class="odd">
+<td>args</td>
+<td>list of arguments to pass to the function when it is called</td>
+</tr>
+<tr class="even">
+<td>period</td>
+<td>period at which the task is executed in milliseconds</td>
+</tr>
+<tr class="odd">
+<td>timeout</td>
+<td>time after which the task stops running in milliseconds, 0 means it runs forever</td>
+</tr>
+<tr class="even">
+<td>tries</td>
+<td>number of executions until the task stops running, 0 means it runs forever</td>
+</tr>
+<tr class="odd">
+<td>execFirst</td>
+<td>boolean indicating if the task should be executed as soon as it is added or not</td>
+</tr>
+<tr class="even">
+<td>exec_before</td>
+<td>list of tasks to be executed before executing the main task</td>
+</tr>
+<tr class="odd">
+<td>exec_after</td>
+<td>list of tasks to be executed after executing the main task</td>
+</tr>
+</tbody>
+</table>
+<h3 id="addcallback">addCallback</h3>
+<table style="width:31%;">
+<colgroup>
+<col width="13%" />
+<col width="16%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>parameter</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>task_id</td>
+<td>string that identifies the main task, can be other callback</td>
+</tr>
+<tr class="even">
+<td>id</td>
+<td>string that identifies the callback</td>
+</tr>
+<tr class="odd">
+<td>func</td>
+<td>function to be executed</td>
+</tr>
+<tr class="even">
+<td>args</td>
+<td>list of arguments to pass to the function when it is called</td>
+</tr>
+<tr class="odd">
+<td>position</td>
+<td>string <code>'before'</code> or <code>'after'</code> to indicate whether the function should be called before or after the main task</td>
+</tr>
+</tbody>
+</table>
+<p>Returns <code>false</code> if main task is not found.</p>
+<h3 id="remove">remove</h3>
+<table>
+<thead>
+<tr class="header">
+<th>parameter</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>id</td>
+<td>string that identifies the task to be removed</td>
+</tr>
+</tbody>
+</table>
+<p>Returns <code>false</code> if task is not found.</p>
+<h3 id="periodic-task">periodic task</h3>
+<table style="width:31%;">
+<colgroup>
+<col width="13%" />
+<col width="16%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>parameter</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>id</td>
+<td>string that identifies the task</td>
+</tr>
+<tr class="even">
+<td>func</td>
+<td>function for the task to execute</td>
+</tr>
+<tr class="odd">
+<td>args</td>
+<td>list of arguments to pass to the function when it is called</td>
+</tr>
+<tr class="even">
+<td>period</td>
+<td>period at which the task is executed in milliseconds</td>
+</tr>
+<tr class="odd">
+<td>timeout</td>
+<td>time after which the task stops running in milliseconds, 0 means it runs forever</td>
+</tr>
+<tr class="even">
+<td>tries</td>
+<td>number of executions until the task stops running, 0 means it runs forever</td>
+</tr>
+<tr class="odd">
+<td>execFirst</td>
+<td>boolean indicating if the task should be executed as soon as it is added or not</td>
+</tr>
+<tr class="even">
+<td>exec_before</td>
+<td>list of tasks to be executed before executing the main task</td>
+</tr>
+<tr class="odd">
+<td>exec_after</td>
+<td>list of tasks to be executed after executing the main task</td>
+</tr>
+<tr class="even">
+<td>lastTimestamp</td>
+<td>timestamp of the last time the task was executed</td>
+</tr>
+<tr class="odd">
+<td>nExecs</td>
+<td>number of times the task has been executed</td>
+</tr>
+<tr class="even">
+<td>startTimestamp</td>
+<td>timestamp of the moment when the task was created</td>
+</tr>
+<tr class="odd">
+<td>isPeriodic</td>
+<td>boolean indicating if the task is periodic or not</td>
+</tr>
+</tbody>
+</table>

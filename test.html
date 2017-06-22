@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<script src="taskoj.js" type="text/javascript"> </script>
+<script type="text/javascript">
+var ptask = taskoj.addPeriodicTask('main', function(x){console.log(x);}, ['y'], 2000, 10000, 0, true);
+var xtask = taskoj.addNonPeriodicTask('b1', function(x){console.log(x);}, ['exec before'], 'before');
+var atask = taskoj.addNonPeriodicTask('b2', function(x){console.log(x);}, ['exec before before'], 'after');
+ptask.addBefore(['b1', 'b2']);
+console.log(ptask.execBefore);
+// ptask.addBefore(['y']);
+</script>
+
+<title>Test page for taskoj</title>
+
+</head>
+<body>
+</body>
+</html>

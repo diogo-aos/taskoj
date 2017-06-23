@@ -44,7 +44,7 @@ var getTimestamp = function(){ return Date.now();};
   };
 
   function check_task(task){
-    console.log(task.id + ': execBefore: ' + task.execBefore.length + ' | execAfter: ' + task.execAfter.length);
+    // console.log(task.id + ': execBefore: ' + task.execBefore.length + ' | execAfter: ' + task.execAfter.length);
     if (task.isPeriodic){
       // check if exceeded number of executions or run time
       var exceeded_tries = (task.tries > 0) && (task.nExecs >= task.tries);
@@ -59,16 +59,13 @@ var getTimestamp = function(){ return Date.now();};
     }
 
     // execute tasks before
-    // check_tasks(task.execBefore);
-    for (i = 0; i < task.execBefore.length;){
-      console.log(task.id);
-      console.log(i);
-      console.log(task.execBefore.length);
-      check_task(task.execBefore[i]);
-      i++;
-    }
+    check_tasks(task.execBefore);
+    // for (var i = 0; i < task.execBefore.length; i++){
+    //   // console.log(task.id + ': i=' + i + ' | execBefore len=' + task.execBefore.length);
+    //   check_task(task.execBefore[i]);
+    // }
 
-    console.log(task.id + ': finished before tasks ');
+    // console.log(task.id + ': finished before tasks ');
 
     task.func.apply(this, task.args);
     task.update();
@@ -76,12 +73,12 @@ var getTimestamp = function(){ return Date.now();};
     // execute tasks after
     check_tasks(task.execAfter);
 
-    console.log(task.id + ': exiting task ');
+    // console.log(task.id + ': exiting task ');
   }
 
   function check_tasks(tasks){
-    for (i = 0; i < tasks.length; i++){
-      check_task(tasks[i]);
+    for (var j = 0; j < tasks.length; j++){
+      check_task(tasks[j]);
     }
     return true;
   }
@@ -92,6 +89,7 @@ var getTimestamp = function(){ return Date.now();};
   }
 
   function addTasksToTask(task_ids, task, toList){
+    // append other tasks to a destination task
 
     var selected_tasks = search_tasks(task_ids, task_list);
 
@@ -102,6 +100,20 @@ var getTimestamp = function(){ return Date.now();};
 
     selected_tasks.forEach(function(t){toList.push(t);}); // add tasks to dest list
     selected_tasks.forEach(function(t){t.parents.push(task);});  // add main task as parent of others
+    return true;
+  }
+
+  function addTaskToTasks(task, task_ids, position){
+    // append a origin task to a set of destination tasks
+    if (position != 'execBefore' && position != 'execAfter')
+      throw 'position must be execBefore or execAfter';
+
+    if (task.isPeriodic)
+      throw 'task to add cannot be periodic';
+
+    var selected_tasks = search_tasks(task_ids, task_list);
+    selected_tasks.forEach(function(t){t[position].push(task);});
+    selected_tasks.forEach(function(t){task.parents.push(t);});
     return true;
   }
 
@@ -118,6 +130,8 @@ var getTimestamp = function(){ return Date.now();};
     };
 
     task.update = function() {task.lastTimestamp = getTimestamp(); task.nExecs++;};
+    task.run = function() {check_task(task);};
+
     task.addBefore = function(task_ids) {addTasksToTask(task_ids, task, task.execBefore);};
     task.addAfter = function(task_ids) {addTasksToTask(task_ids, task, task.execAfter);};
 
@@ -155,14 +169,14 @@ var getTimestamp = function(){ return Date.now();};
     return task;
   };
 
-  module_var.addNonPeriodicTask = function(id, func, args, position){
-    if (position != 'before' && position != 'after')
-      throw 'position must be before or after';
-
+  module_var.addNonPeriodicTask = function(id, func, args){
     // create and add new task
     var task = createBaseTask(id, func, args);  // also adds to task list
     task.isPeriodic = false;
     task.parents = [];
+
+    task.addBeforeTo = function(task_ids){addTaskToTasks(task, task_ids, 'execBefore');}
+    task.addAfterTo = function(task_ids){addTaskToTasks(task, task_ids, 'execAfter');}
 
     return task;
   };

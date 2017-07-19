@@ -43,6 +43,11 @@ var getTimestamp = function(){ return Date.now();};
     return false;
   };
 
+  module_var.run = function(id){
+    var task = search_task(id, task_list);
+    task.run();
+  };    
+
   function check_task(task){
     // console.log(task.id + ': execBefore: ' + task.execBefore.length + ' | execAfter: ' + task.execAfter.length);
     if (task.isPeriodic){
@@ -180,5 +185,7 @@ var getTimestamp = function(){ return Date.now();};
 
     return task;
   };
+
+  module_var.search_task = function(id){return search_task(id, task_list);};
 
 })(taskoj);

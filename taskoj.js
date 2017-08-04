@@ -45,8 +45,9 @@ var getTimestamp = function(){ return Date.now();};
 
   module_var.run = function(id){
     var task = search_task(id, task_list);
+    if (task === null) throw 'task ' + id + ' not found'
     task.run();
-  };    
+  };
 
   function check_task(task){
     // console.log(task.id + ': execBefore: ' + task.execBefore.length + ' | execAfter: ' + task.execAfter.length);

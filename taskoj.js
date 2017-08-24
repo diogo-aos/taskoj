@@ -33,6 +33,7 @@ var getTimestamp = function(){ return Date.now();};
     for(var i = 0; i < task_list.length; i++)
       if (id == task_list[i].id){
         task_list.pop(i);
+        task.removeFromParents();
         // if no more tasks, stop loop
         if (task_list.length === 0) {
           clearInterval(loop);
@@ -132,7 +133,8 @@ var getTimestamp = function(){ return Date.now();};
       'execAfter': [],
       'startTimestamp': getTimestamp(),
       'lastTimestamp': null,
-      'nExecs': 0
+      'nExecs': 0,
+      'parents': []
     };
 
     task.update = function() {task.lastTimestamp = getTimestamp(); task.nExecs++;};
@@ -140,6 +142,16 @@ var getTimestamp = function(){ return Date.now();};
 
     task.addBefore = function(task_ids) {addTasksToTask(task_ids, task, task.execBefore);};
     task.addAfter = function(task_ids) {addTasksToTask(task_ids, task, task.execAfter);};
+
+    task.addBeforeTo = function(task_ids){addTaskToTasks(task, task_ids, 'execBefore');}
+    task.addAfterTo = function(task_ids){addTaskToTasks(task, task_ids, 'execAfter');}
+
+    task.removeFromParents = function(){
+      task.parents.forEach(function(t){
+        t.execBefore.pop(task);
+        t.execAfter.pop(task);
+      });
+    };
 
     task_list.push(task);
 
@@ -179,10 +191,6 @@ var getTimestamp = function(){ return Date.now();};
     // create and add new task
     var task = createBaseTask(id, func, args);  // also adds to task list
     task.isPeriodic = false;
-    task.parents = [];
-
-    task.addBeforeTo = function(task_ids){addTaskToTasks(task, task_ids, 'execBefore');}
-    task.addAfterTo = function(task_ids){addTaskToTasks(task, task_ids, 'execAfter');}
 
     return task;
   };

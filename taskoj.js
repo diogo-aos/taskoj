@@ -51,6 +51,8 @@ var getTimestamp = function(){ return Date.now();};
   };
 
   function check_task(task){
+    if (task.frozen) return;
+
     // console.log(task.id + ': execBefore: ' + task.execBefore.length + ' | execAfter: ' + task.execAfter.length);
     if (task.isPeriodic){
       // check if exceeded number of executions or run time
@@ -67,6 +69,7 @@ var getTimestamp = function(){ return Date.now();};
 
     // execute tasks before
     check_tasks(task.execBefore);
+
     // for (var i = 0; i < task.execBefore.length; i++){
     //   // console.log(task.id + ': i=' + i + ' | execBefore len=' + task.execBefore.length);
     //   check_task(task.execBefore[i]);
@@ -134,7 +137,8 @@ var getTimestamp = function(){ return Date.now();};
       'startTimestamp': getTimestamp(),
       'lastTimestamp': null,
       'nExecs': 0,
-      'parents': []
+      'parents': [],
+      'frozen': false
     };
 
     task.update = function() {task.lastTimestamp = getTimestamp(); task.nExecs++;};

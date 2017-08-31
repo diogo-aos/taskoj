@@ -21,26 +21,29 @@ var getTimestamp = function(){ return Date.now();};
     var ret_list = [];
     for (var i = 0; i < ids.length; i++){
       var task = search_task(ids[i], task_list);
-      if (task === null)
-        throw 'task ' + ids[i] + ' does not exist';
       ret_list.push(task);
     }
     return ret_list;
   }
 
   module_var.remove = function(id){
-    var task = search_task(id, task_list);
-    for(var i = 0; i < task_list.length; i++)
-      if (id == task_list[i].id){
-        task_list.pop(i);
-        task.removeFromParents();
-        // if no more tasks, stop loop
-        if (task_list.length === 0) {
-          clearInterval(loop);
-          loop = null;
-        }
-        return true;
+
+    // look for task in task list
+    for (var i=0; i<task_list.length; i++){
+      if (id != task_list[i].id) continue;
+
+      // found task!
+      var task = task_list[i];
+      task_list.splice(i, 1);  // remove from general list
+      task.removeFromParents();  // remove task from parents
+
+      // if no more tasks, stop loop
+      if (task_list.length === 0) {
+        clearInterval(loop);
+        loop = null;
       }
+      return true;
+    }
     return false;
   };
 
@@ -53,7 +56,6 @@ var getTimestamp = function(){ return Date.now();};
   function check_task(task){
     if (task.frozen) return;
 
-    // console.log(task.id + ': execBefore: ' + task.execBefore.length + ' | execAfter: ' + task.execAfter.length);
     if (task.isPeriodic){
       // check if exceeded number of executions or run time
       var exceeded_tries = (task.tries > 0) && (task.nExecs >= task.tries);
@@ -70,20 +72,11 @@ var getTimestamp = function(){ return Date.now();};
     // execute tasks before
     check_tasks(task.execBefore);
 
-    // for (var i = 0; i < task.execBefore.length; i++){
-    //   // console.log(task.id + ': i=' + i + ' | execBefore len=' + task.execBefore.length);
-    //   check_task(task.execBefore[i]);
-    // }
-
-    // console.log(task.id + ': finished before tasks ');
-
     task.func.apply(this, task.args);
     task.update();
 
     // execute tasks after
     check_tasks(task.execAfter);
-
-    // console.log(task.id + ': exiting task ');
   }
 
   function check_tasks(tasks){
@@ -110,6 +103,7 @@ var getTimestamp = function(){ return Date.now();};
 
     selected_tasks.forEach(function(t){toList.push(t);}); // add tasks to dest list
     selected_tasks.forEach(function(t){t.parents.push(task);});  // add main task as parent of others
+
     return true;
   }
 
@@ -143,6 +137,8 @@ var getTimestamp = function(){ return Date.now();};
 
     task.update = function() {task.lastTimestamp = getTimestamp(); task.nExecs++;};
     task.run = function() {check_task(task);};
+    task.freeze = function() {task.frozen = true;}
+    task.unfreeze = function() {task.frozen = false;}
 
     task.addBefore = function(task_ids) {addTasksToTask(task_ids, task, task.execBefore);};
     task.addAfter = function(task_ids) {addTasksToTask(task_ids, task, task.execAfter);};
@@ -152,8 +148,13 @@ var getTimestamp = function(){ return Date.now();};
 
     task.removeFromParents = function(){
       task.parents.forEach(function(t){
-        t.execBefore.pop(task);
-        t.execAfter.pop(task);
+        var iBefore = t.execBefore.indexOf(task);
+        if (iBefore != -1)
+          t.execBefore.splice(iBefore, 1);
+
+        var iAfter = t.execAfter.indexOf(task);
+        if (iAfter != -1)
+          t.execAfter.splice(iAfter, 1);
       });
     };
 
